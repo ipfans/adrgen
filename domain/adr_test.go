@@ -23,7 +23,6 @@ accepted
 	if result != expectedString {
 		t.Fatal(fmt.Sprintf("failed: expected %s, returned %s", expectedString, result))
 	}
-
 }
 
 func TestRelation(t *testing.T) {
@@ -219,15 +218,15 @@ func TestValidateStatus(t *testing.T) {
 	allowedStatuses := []string{"status", "status2"}
 	statusManager := CreateADRStatusManager(Config{Statuses: allowedStatuses})
 	if statusManager.ValidateStatus("ñe") != false {
-		t.Fatal(fmt.Sprintf("failed validating an incorrect status"))
+		t.Fatal("failed validating an incorrect status")
 	}
 
 	statusManager = CreateADRStatusManager(Config{Statuses: []string{}})
 	if statusManager.ValidateStatus("ñe") != true {
-		t.Fatal(fmt.Sprintf("failed validating status when there is not any configured status"))
+		t.Fatal("failed validating status when there is not any configured status")
 	}
 
 	if statusManager.ValidateStatus("status") != true {
-		t.Fatal(fmt.Sprintf("failed not validating a correct status"))
+		t.Fatal("failed not validating a correct status")
 	}
 }

@@ -11,18 +11,19 @@ import (
 	"time"
 
 	"github.com/cucumber/godog"
-	"github.com/cucumber/messages-go/v10"
+	"github.com/cucumber/messages-go/v16"
 )
 
-var userTitle string
-var userMetaParams string
-var createdFilename string
-var createdFilenameWithPath string
-var userStatus string
-var relation string
-var targetADRId int
-var ADRs map[int]string = map[int]string{}
-var commandOutput string
+var (
+	userTitle               string
+	userMetaParams          string
+	createdFilename         string
+	createdFilenameWithPath string
+	relation                string
+	targetADRId             int
+	ADRs                    map[int]string = map[int]string{}
+	commandOutput           string
+)
 
 var templateContent = `# {title}
 
@@ -165,9 +166,9 @@ func theUserSpecifyTheTitle(title string) error {
 }
 
 func thereIsAConfigFileCreatedWithThisConfiguration(
-	table *messages.PickleStepArgument_PickleTable,
+	table *messages.PickleTable,
 ) error {
-	row := table.GetRows()[1]
+	row := table.Rows[1]
 	content := fmt.Sprintf(`
 default_meta: []
 default_status: %s
@@ -184,10 +185,10 @@ supported_statuses:
 template_file: %s
 
 `,
-		row.GetCells()[0].Value,
-		row.GetCells()[1].Value,
-		row.GetCells()[3].Value,
-		row.GetCells()[2].Value,
+		row.Cells[0].Value,
+		row.Cells[1].Value,
+		row.Cells[3].Value,
+		row.Cells[2].Value,
 	)
 
 	configFile := "adrgen.config.yml"
@@ -204,27 +205,27 @@ template_file: %s
 
 	output, err = exec.Command("/bin/sh", "-c", fmt.Sprintf(
 		"cd ../e2e/tests; mkdir %s; touch %s;echo \"%s\" > %s",
-		row.GetCells()[1].Value,
-		row.GetCells()[2].Value,
+		row.Cells[1].Value,
+		row.Cells[2].Value,
 		templateContent,
-		row.GetCells()[2].Value,
+		row.Cells[2].Value,
 	)).CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("error generating the config file: %s %s", err, output)
 	}
 
-	directory = row.GetCells()[1].Value
+	directory = row.Cells[1].Value
 
 	return nil
 }
 
 func thereIsNotAnyConfigFile() error {
-	exec.Command("/bin/sh", "-c", "rm ../e2e/tests/adrgen.config.yml").CombinedOutput()
+	_, _ = exec.Command("/bin/sh", "-c", "rm ../e2e/tests/adrgen.config.yml").CombinedOutput()
 	directory = ""
 	return nil
 }
 
-func hasTheFollowingContent(content *messages.PickleStepArgument_PickleDocString) error {
+func hasTheFollowingContent(content *messages.PickleDocString) error {
 	output, err := exec.Command(
 		"/bin/sh",
 		"-c",
@@ -250,7 +251,7 @@ func hasTheFollowingContent(content *messages.PickleStepArgument_PickleDocString
 }
 
 func thereIsNoADRFiles() error {
-	exec.Command("/bin/sh", "-c", "rm ../e2e/tests/*.md").CombinedOutput()
+	_, _ = exec.Command("/bin/sh", "-c", "rm ../e2e/tests/*.md").CombinedOutput()
 	return nil
 }
 
@@ -274,7 +275,7 @@ func theUserSpecifyTheStatusForTheADRIdentifiedByTheId(status string, adrId int)
 
 func thereIsAnADRFileWithContent(
 	filename string,
-	content *messages.PickleStepArgument_PickleDocString,
+	content *messages.PickleDocString,
 ) error {
 	output, err := exec.Command("/bin/sh", "-c", fmt.Sprintf(
 		"cd ../e2e/tests; touch %s; echo \"%s\" > %s",
@@ -335,32 +336,31 @@ func weHaveACleanedSystem() error {
 	_, err := exec.Command(
 		"/bin/sh",
 		"-c",
-		fmt.Sprintf("cd ../e2e/tests; rm -f *.md")).CombinedOutput()
+		"cd ../e2e/tests; rm -f *.md").CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("error cleaning the test directory: %s", err)
 	}
 	return nil
 }
 
-
-func theFollowingAdrsInTheSystem(table *messages.PickleStepArgument_PickleTable) error {
+func theFollowingAdrsInTheSystem(table *messages.PickleTable) error {
 	var content string
-	for _, row := range table.GetRows() {
+	for _, row := range table.Rows {
 		content = templateContent
-		content = strings.Replace(content, "{status}", row.GetCells()[1].Value, 1)
-		content = strings.Replace(content, "{title}", row.GetCells()[3].Value, 1)
+		content = strings.Replace(content, "{status}", row.Cells[1].Value, 1)
+		content = strings.Replace(content, "{title}", row.Cells[3].Value, 1)
 		output, err := exec.Command(
 			"/bin/sh",
 			"-c",
 			fmt.Sprintf(
 				"cd ../e2e/tests; touch \"%s\"; echo \"%s\"> %s",
-				row.GetCells()[0].Value,
+				row.Cells[0].Value,
 				content,
-				row.GetCells()[0].Value,
+				row.Cells[0].Value,
 			),
 		).CombinedOutput()
-		id, _ := strconv.Atoi(row.GetCells()[2].Value)
-		ADRs[id] = row.GetCells()[0].Value
+		id, _ := strconv.Atoi(row.Cells[2].Value)
+		ADRs[id] = row.Cells[0].Value
 		if err != nil {
 			return fmt.Errorf("error creating files in system: %s %s", err, output)
 		}
@@ -418,7 +418,7 @@ func theUserExecutesTheListCommand() error {
 	output, err := exec.Command(
 		"/bin/sh",
 		"-c",
-		fmt.Sprintf("cd ../e2e/tests; ../bin/adrgen list")).CombinedOutput()
+		"cd ../e2e/tests; ../bin/adrgen list").CombinedOutput()
 	if err != nil {
 		return fmt.Errorf("error executing the list command: %s %s", err, output)
 	}
@@ -438,18 +438,16 @@ func theUserExecutesTheListCommandWithTheFilter(filter string) error {
 	return nil
 }
 
-
-func theUserSeeTheResultOnTheScreen(contentRaw *messages.PickleStepArgument_PickleDocString) error {
+func theUserSeeTheResultOnTheScreen(contentRaw *messages.PickleDocString) error {
 	content := strings.TrimSpace(contentRaw.Content)
-	content = strings.Replace(content,"Filename", "Filename         ", 1)
-	content = strings.Replace(content,".md", ".md  ", 4)
+	content = strings.Replace(content, "Filename", "Filename         ", 1)
+	content = strings.Replace(content, ".md", ".md  ", 4)
 	content = strings.TrimSpace(content)
 	if strings.Contains(commandOutput, content) == false {
 		return fmt.Errorf("expected: \n%s\n\nreturned: \n%s", content, commandOutput)
 	}
 	return nil
 }
-
 
 func CreateFeatureContext(s *godog.ScenarioContext) {
 	s.Step(`^the (.+) ADR file is created$`, aNewFileIsCreated)
@@ -486,7 +484,4 @@ func CreateFeatureContext(s *godog.ScenarioContext) {
 	s.Step(`^the user see the result on the screen:$`, theUserSeeTheResultOnTheScreen)
 	s.Step(`^the user executes the list command with the filter "([^"]*)"$`, theUserExecutesTheListCommandWithTheFilter)
 	s.Step(`^we have a cleaned system$`, weHaveACleanedSystem)
-
-
-
 }

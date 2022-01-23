@@ -15,7 +15,7 @@ func NewVersionCmd() *cobra.Command {
 		Long:  `Shows the ADRgen version`,
 		Args:  cobra.ExactArgs(0),
 		Run: func(cmd *cobra.Command, args []string) {
-			fmt.Println(fmt.Sprintf("version: %s", VERSION))
+			fmt.Printf("version: %s\n", VERSION)
 		},
 	}
 	command.Example = "adrgen version"

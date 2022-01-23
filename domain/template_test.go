@@ -52,12 +52,12 @@ sddssd
 `
 	error = validateTemplateFields(content2)
 	if error == nil {
-		t.Fatal(fmt.Sprintf("failed validating incorrect template"))
+		t.Fatal("failed validating incorrect template")
 	}
 
 	errorExpected := "the configured template has not the required field {date}"
 	if error.Error() != errorExpected {
-		t.Fatal(fmt.Sprintf("failed, error expected '%s', returned '%s'", errorExpected, error))
+		t.Fatalf("failed, error expected '%s', returned '%s'", errorExpected, error)
 	}
 
 	content3 := `# {title}
@@ -66,11 +66,11 @@ Status: {status}
 `
 	error = validateTemplateFields(content3)
 	if error == nil {
-		t.Fatal(fmt.Sprintf("failed validating incorrect template"))
+		t.Fatal("failed validating incorrect template")
 	}
 
 	errorExpected = "the configured template must have an status following the format \n\n## Status\n\n{status}\n\n"
 	if error.Error() != errorExpected {
-		t.Fatal(fmt.Sprintf("failed, error expected '%s', returned '%s'", errorExpected, error))
+		t.Fatalf("failed, error expected '%s', returned '%s'", errorExpected, error)
 	}
 }

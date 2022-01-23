@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+
 	"github.com/asiermarques/adrgen/domain"
 	"github.com/asiermarques/adrgen/infrastructure"
 	"github.com/rodaine/table"
@@ -36,12 +37,12 @@ func NewListCmd() *cobra.Command {
 			}
 
 			rawFilterQuery, metaError := cmd.LocalFlags().GetString("filter")
-			if metaError!=nil {
+			if metaError != nil {
 				fmt.Printf("an error occurred processing the meta parameter %s\n", metaError)
 				return
 			}
 
-			var repository = infrastructure.CreateADRDirectoryRepository(config.TargetDirectory)
+			repository := infrastructure.CreateADRDirectoryRepository(config.TargetDirectory)
 			var adrFiles []domain.ADR
 			if rawFilterQuery != "" {
 				filterParams, err := infrastructure.ParseFilterParams(rawFilterQuery)
@@ -56,7 +57,7 @@ func NewListCmd() *cobra.Command {
 					return
 				}
 				adrFiles = files
-			}else{
+			} else {
 				files, err := repository.FindAll()
 				if err != nil {
 					fmt.Printf("error listing the adr files: %s", err)

@@ -51,14 +51,14 @@ func (repo privateADRDirectoryRepository) FindAll() ([]domain.ADR, error) {
 	return result, nil
 }
 
-func (repo privateADRDirectoryRepository) Query(filterParams map[string][]string) ([]domain.ADR, error)  {
+func (repo privateADRDirectoryRepository) Query(filterParams map[string][]string) ([]domain.ADR, error) {
 	allItems, err := repo.FindAll()
 	if err != nil {
 		return allItems, err
 	}
 	filteredItems := []domain.ADR{}
 	for _, adr := range allItems {
-		if FilterADR(adr, filterParams) == true {
+		if FilterADR(adr, filterParams) {
 			filteredItems = append(filteredItems, adr)
 		}
 	}

@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/asiermarques/adrgen/application"
-
 	"github.com/asiermarques/adrgen/domain"
 	"github.com/asiermarques/adrgen/infrastructure"
 	"github.com/spf13/cobra"
@@ -29,7 +28,6 @@ func NewCreateCmd() *cobra.Command {
 		Long:  `Create a new ADR File in the current directory, you can add meta parameters for decisions tracing`,
 		Args:  cobra.ExactArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-
 			config, err := GetConfig()
 			if err != nil {
 				if config.TargetDirectory != "" {
@@ -95,7 +93,7 @@ func NewCreateCmd() *cobra.Command {
 				fmt.Println(creationError)
 				return
 			}
-			fmt.Println(fmt.Sprintf("%s created\n", filename))
+			fmt.Printf("file created: %s\n\n", filename)
 		},
 	}
 
